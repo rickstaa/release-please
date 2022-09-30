@@ -24,13 +24,14 @@ import {PomXml} from '../../src/updaters/java/pom-xml';
 import {TagName} from '../../src/util/tag-name';
 import {Version} from '../../src/version';
 import {expect} from 'chai';
+import {parseConventionalCommits} from '../../src/commit';
 
 const sandbox = sinon.createSandbox();
 
-const COMMITS = [
+const COMMITS = parseConventionalCommits([
   buildMockCommit('fix(deps): update dependency'),
   buildMockCommit('chore: update common templates'),
-];
+]);
 
 describe('Maven', () => {
   let github: GitHub;

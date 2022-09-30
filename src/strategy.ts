@@ -15,7 +15,7 @@
 import {ReleasePullRequest} from './release-pull-request';
 import {Release} from './release';
 import {PullRequest} from './pull-request';
-import {Commit} from './commit';
+import {ConventionalCommit} from './commit';
 import {VersioningStrategy} from './versioning-strategy';
 import {ChangelogNotes} from './changelog-notes';
 import {Version} from './version';
@@ -40,7 +40,7 @@ export interface Strategy {
    *   open a pull request.
    */
   buildReleasePullRequest(
-    commits: Commit[],
+    commits: ConventionalCommit[],
     latestRelease?: Release,
     draft?: boolean,
     labels?: string[]

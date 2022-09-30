@@ -19,7 +19,7 @@ import {RootComposerUpdatePackages} from '../updaters/php/root-composer-update-p
 import {PHPManifest} from '../updaters/php/php-manifest';
 import {PHPClientVersion} from '../updaters/php/php-client-version';
 import {VersionsMap, Version} from '../version';
-import {Commit, parseConventionalCommits} from '../commit';
+import {ConventionalCommit} from '../commit';
 import {CommitSplit} from '../util/commit-split';
 import {DefaultUpdater} from '../updaters/default';
 import {Release} from '../release';
@@ -65,14 +65,12 @@ export class PHPYoshi extends BaseStrategy {
     });
   }
   async buildReleasePullRequest(
-    commits: Commit[],
+    commits: ConventionalCommit[],
     latestRelease?: Release,
     draft?: boolean,
     labels: string[] = []
   ): Promise<ReleasePullRequest | undefined> {
-    const conventionalCommits = await this.postProcessCommits(
-      parseConventionalCommits(commits, this.logger)
-    );
+    const conventionalCommits = await this.postProcessCommits(commits);
     if (conventionalCommits.length === 0) {
       this.logger.info(`No commits for path: ${this.path}, skipping`);
       return undefined;

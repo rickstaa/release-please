@@ -24,16 +24,17 @@ import {Version} from '../../src/version';
 import {Changelog} from '../../src/updaters/changelog';
 import snapshot = require('snap-shot-it');
 import {VersionGo} from '../../src/updaters/go/version-go';
+import {parseConventionalCommits} from '../../src/commit';
 
 const sandbox = sinon.createSandbox();
 
-const COMMITS = [
+const COMMITS = parseConventionalCommits([
   buildMockCommit(
     'fix(iam): update dependency com.google.cloud:google-cloud-storage to v1.120.0',
     ['iam/foo.go']
   ),
   buildMockCommit('chore: update common templates'),
-];
+]);
 
 describe('GoYoshi', () => {
   let github: GitHub;
@@ -109,12 +110,12 @@ describe('GoYoshi', () => {
         github,
         includeComponentInTag: false,
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         buildMockCommit('fix: some generic fix'),
         buildMockCommit('fix(translate): some translate fix'),
         buildMockCommit('fix(logging): some logging fix'),
         buildMockCommit('feat: some generic feature'),
-      ];
+      ]);
       const pullRequest = await strategy.buildReleasePullRequest(commits);
       const pullRequestBody = pullRequest!.body.toString();
       expect(pullRequestBody).to.not.include('logging');
@@ -130,14 +131,14 @@ describe('GoYoshi', () => {
         github,
         includeComponentInTag: false,
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         buildMockCommit('fix: some generic fix'),
         buildMockCommit('fix(iam/apiv1): some firestore fix', [
           'accessapproval/apiv1/access_approval_client.go',
           'iam/apiv1/admin/firestore_admin_client.go',
         ]),
         buildMockCommit('feat: some generic feature'),
-      ];
+      ]);
       const pullRequest = await strategy.buildReleasePullRequest(commits);
       const pullRequestBody = pullRequest!.body.toString();
       expect(pullRequestBody).to.not.include('access');
@@ -155,12 +156,12 @@ describe('GoYoshi', () => {
         targetBranch: 'main',
         github,
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         buildMockCommit('feat(all): auto-regenerate discovery clients (#1281)'),
         buildMockCommit('feat(all): auto-regenerate discovery clients (#1280)'),
         buildMockCommit('feat(all): auto-regenerate discovery clients (#1279)'),
         buildMockCommit('feat(all): auto-regenerate discovery clients (#1278)'),
-      ];
+      ]);
       const pullRequest = await strategy.buildReleasePullRequest(commits);
       const pullRequestBody = pullRequest!.body.toString();
       snapshot(dateSafe(pullRequestBody));

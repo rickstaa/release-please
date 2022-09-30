@@ -15,7 +15,7 @@
 import {ChangelogSection} from './changelog-notes';
 import {GitHub, GitHubRelease, GitHubTag} from './github';
 import {Version, VersionsMap} from './version';
-import {Commit} from './commit';
+import {Commit, parseConventionalCommits} from './commit';
 import {PullRequest} from './pull-request';
 import {logger as defaultLogger, Logger} from './util/logger';
 import {CommitSplit} from './util/commit-split';
@@ -668,7 +668,7 @@ export class Manifest {
       );
       this.logger.debug(`type: ${config.releaseType}`);
       this.logger.debug(`targetBranch: ${this.targetBranch}`);
-      let pathCommits = commitsPerPath[path];
+      let pathCommits = parseConventionalCommits(commitsPerPath[path]);
       // The processCommits hook can be implemented by plugins to
       // post-process commits. This can be used to perform cleanup, e.g,, sentence
       // casing all commit messages:

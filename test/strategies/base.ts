@@ -26,6 +26,7 @@ import {Generic} from '../../src/updaters/generic';
 import {GenericXml} from '../../src/updaters/generic-xml';
 import {PomXml} from '../../src/updaters/java/pom-xml';
 import {GenericYaml} from '../../src/updaters/generic-yaml';
+import {parseConventionalCommits} from '../../src/commit';
 
 const sandbox = sinon.createSandbox();
 
@@ -63,12 +64,12 @@ describe('Strategy', () => {
         github,
         component: 'google-cloud-automl',
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         {
           sha: 'abc123',
           message: 'chore: initial commit\n\nRelease-As: 2.3.4',
         },
-      ];
+      ]);
       const pullRequest = await strategy.buildReleasePullRequest(commits);
       expect(pullRequest).to.not.be.undefined;
       expect(pullRequest?.version?.toString()).to.eql('2.3.4');
@@ -81,12 +82,12 @@ describe('Strategy', () => {
         component: 'google-cloud-automl',
         initialVersion: '0.1.0',
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         {
           sha: 'abc123',
           message: 'feat: initial commit',
         },
-      ];
+      ]);
       const pullRequest = await strategy.buildReleasePullRequest(commits);
       expect(pullRequest).to.not.be.undefined;
       expect(pullRequest?.version?.toString()).to.eql('0.1.0');
@@ -100,7 +101,7 @@ describe('Strategy', () => {
         extraFiles: ['0', 'foo/1.~csv', 'foo/2.bak', 'foo/baz/bar/', '/3.java'],
       });
       const pullRequest = await strategy.buildReleasePullRequest(
-        [{sha: 'aaa', message: 'fix: a bugfix'}],
+        parseConventionalCommits([{sha: 'aaa', message: 'fix: a bugfix'}]),
         undefined
       );
       expect(pullRequest).to.exist;
@@ -123,7 +124,7 @@ describe('Strategy', () => {
         extraFiles: ['0', {type: 'json', path: '/3.json', jsonpath: '$.foo'}],
       });
       const pullRequest = await strategy.buildReleasePullRequest(
-        [{sha: 'aaa', message: 'fix: a bugfix'}],
+        parseConventionalCommits([{sha: 'aaa', message: 'fix: a bugfix'}]),
         undefined
       );
       expect(pullRequest).to.exist;
@@ -140,7 +141,7 @@ describe('Strategy', () => {
         extraFiles: ['0', {type: 'yaml', path: '/3.yaml', jsonpath: '$.foo'}],
       });
       const pullRequest = await strategy.buildReleasePullRequest(
-        [{sha: 'aaa', message: 'fix: a bugfix'}],
+        parseConventionalCommits([{sha: 'aaa', message: 'fix: a bugfix'}]),
         undefined
       );
       expect(pullRequest).to.exist;
@@ -157,7 +158,7 @@ describe('Strategy', () => {
         extraFiles: ['0', {type: 'xml', path: '/3.xml', xpath: '$.foo'}],
       });
       const pullRequest = await strategy.buildReleasePullRequest(
-        [{sha: 'aaa', message: 'fix: a bugfix'}],
+        parseConventionalCommits([{sha: 'aaa', message: 'fix: a bugfix'}]),
         undefined
       );
       expect(pullRequest).to.exist;
@@ -174,7 +175,7 @@ describe('Strategy', () => {
         extraFiles: ['0', {type: 'pom', path: '/3.xml'}],
       });
       const pullRequest = await strategy.buildReleasePullRequest(
-        [{sha: 'aaa', message: 'fix: a bugfix'}],
+        parseConventionalCommits([{sha: 'aaa', message: 'fix: a bugfix'}]),
         undefined
       );
       expect(pullRequest).to.exist;
@@ -202,7 +203,7 @@ describe('Strategy', () => {
         ],
       });
       const pullRequest = await strategy.buildReleasePullRequest(
-        [{sha: 'aaa', message: 'fix: a bugfix'}],
+        parseConventionalCommits([{sha: 'aaa', message: 'fix: a bugfix'}]),
         undefined
       );
       expect(pullRequest).to.exist;
@@ -219,12 +220,12 @@ describe('Strategy', () => {
         component: 'google-cloud-automl',
         changelogHost: 'https://example.com',
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         {
           sha: 'abc5566',
           message: 'fix: a bugfix',
         },
-      ];
+      ]);
       const pullRequest = await strategy.buildReleasePullRequest(commits);
       expect(pullRequest).to.exist;
       expect(pullRequest?.body.toString()).to.have.string(
@@ -253,7 +254,7 @@ describe('Strategy', () => {
             extraFiles: [file],
           });
           await strategy.buildReleasePullRequest(
-            [{sha: 'aaa', message: 'fix: a bugfix'}],
+            parseConventionalCommits([{sha: 'aaa', message: 'fix: a bugfix'}]),
             undefined
           );
           expect.fail(`expected [addPath] to reject path: ${file}`);
@@ -273,7 +274,7 @@ describe('Strategy', () => {
         extraLabels: ['foo', 'bar'],
       });
       const pullRequest = await strategy.buildReleasePullRequest(
-        [{sha: 'aaa', message: 'fix: a bugfix'}],
+        parseConventionalCommits([{sha: 'aaa', message: 'fix: a bugfix'}]),
         undefined
       );
       expect(pullRequest).to.exist;

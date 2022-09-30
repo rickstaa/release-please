@@ -27,6 +27,7 @@ import {TagName} from '../../src/util/tag-name';
 import {expect} from 'chai';
 import {Changelog} from '../../src/updaters/changelog';
 import {ChartYaml} from '../../src/updaters/helm/chart-yaml';
+import {parseConventionalCommits} from '../../src/commit';
 
 nock.disableNetConnect();
 const sandbox = sinon.createSandbox();
@@ -34,11 +35,11 @@ const fixturesPath = './test/fixtures/strategies/helm';
 
 describe('Helm', () => {
   let github: GitHub;
-  const commits = [
+  const commits = parseConventionalCommits([
     buildMockCommit(
       'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
     ),
-  ];
+  ]);
   beforeEach(async () => {
     github = await GitHub.create({
       owner: 'googleapis',

@@ -27,6 +27,7 @@ import {TagName} from '../../src/util/tag-name';
 import {expect} from 'chai';
 import {Changelog} from '../../src/updaters/changelog';
 import {PubspecYaml} from '../../src/updaters/dart/pubspec-yaml';
+import {parseConventionalCommits} from '../../src/commit';
 
 nock.disableNetConnect();
 const sandbox = sinon.createSandbox();
@@ -45,11 +46,11 @@ describe('Dart', () => {
     sandbox.restore();
   });
   describe('buildReleasePullRequest', () => {
-    const commits = [
+    const commits = parseConventionalCommits([
       buildMockCommit(
         'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
       ),
-    ];
+    ]);
     it('returns release PR changes with defaultInitialVersion', async () => {
       const expectedVersion = '1.0.0';
       const strategy = new Dart({
@@ -91,11 +92,11 @@ describe('Dart', () => {
         targetBranch: 'main',
         github,
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         buildMockCommit(
           'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
         ),
-      ];
+      ]);
       const latestRelease = {
         tag: new TagName(Version.parse('0.123.4'), 'hello_world'),
         sha: 'abc123',
@@ -123,11 +124,11 @@ describe('Dart', () => {
         component: 'some-dart-package',
         packageName: 'some-dart-package',
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         buildMockCommit(
           'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
         ),
-      ];
+      ]);
       const latestRelease = {
         tag: new TagName(Version.parse('0.123.4'), 'some-dart-package'),
         sha: 'abc123',

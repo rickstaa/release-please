@@ -29,6 +29,7 @@ import {Changelog} from '../../src/updaters/changelog';
 import {DEFAULT_LABELS, DEFAULT_SNAPSHOT_LABELS} from '../../src/manifest';
 import {Generic} from '../../src/updaters/generic';
 import {JavaReleased} from '../../src/updaters/java/java-released';
+import {parseConventionalCommits} from '../../src/commit';
 
 const sandbox = sinon.createSandbox();
 
@@ -46,14 +47,16 @@ describe('Java', () => {
   });
   describe('buildReleasePullRequest', () => {
     describe('for default component', () => {
-      const COMMITS_NO_SNAPSHOT = [
+      const COMMITS_NO_SNAPSHOT = parseConventionalCommits([
         buildMockCommit('fix(deps): update dependency'),
         buildMockCommit('fix(deps): update dependency'),
         buildMockCommit('chore: update common templates'),
-      ];
+      ]);
       const COMMITS_WITH_SNAPSHOT = [
         ...COMMITS_NO_SNAPSHOT,
-        buildMockCommit('chore(main): release 2.3.4-SNAPSHOT'),
+        ...parseConventionalCommits([
+          buildMockCommit('chore(main): release 2.3.4-SNAPSHOT'),
+        ]),
       ];
 
       it('returns release PR changes with defaultInitialVersion', async () => {
@@ -192,7 +195,9 @@ describe('Java', () => {
         };
         const release = await strategy.buildReleasePullRequest(
           [
-            buildMockCommit('chore(main): release other 2.3.4-SNAPSHOT'),
+            ...parseConventionalCommits([
+              buildMockCommit('chore(main): release other 2.3.4-SNAPSHOT'),
+            ]),
             ...COMMITS_NO_SNAPSHOT,
           ],
           latestRelease
@@ -289,15 +294,17 @@ describe('Java', () => {
     });
 
     describe('with includeComponentInTag', () => {
-      const COMMITS_NO_SNAPSHOT = [
+      const COMMITS_NO_SNAPSHOT = parseConventionalCommits([
         buildMockCommit('fix(deps): update dependency'),
         buildMockCommit('fix(deps): update dependency'),
         buildMockCommit('chore: update common templates'),
         buildMockCommit('chore(main): release other-sample 13.3.5'),
-      ];
+      ]);
       const COMMITS_WITH_SNAPSHOT = COMMITS_NO_SNAPSHOT.concat(
-        buildMockCommit('chore(main): release other-sample 13.3.6-SNAPSHOT'),
-        buildMockCommit('chore(main): release test-sample 2.3.4-SNAPSHOT')
+        ...parseConventionalCommits([
+          buildMockCommit('chore(main): release other-sample 13.3.6-SNAPSHOT'),
+          buildMockCommit('chore(main): release test-sample 2.3.4-SNAPSHOT'),
+        ])
       );
 
       it('returns release PR changes with defaultInitialVersion', async () => {

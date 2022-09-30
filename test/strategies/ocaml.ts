@@ -29,11 +29,12 @@ import {Changelog} from '../../src/updaters/changelog';
 import {EsyJson} from '../../src/updaters/ocaml/esy-json';
 import {Opam} from '../../src/updaters/ocaml/opam';
 import {DuneProject} from '../../src/updaters/ocaml/dune-project';
+import {parseConventionalCommits} from '../../src/commit';
 
 const sandbox = sinon.createSandbox();
 const fixturesPath = './test/fixtures/strategies/ocaml';
 
-const COMMITS = [
+const COMMITS = parseConventionalCommits([
   buildMockCommit(
     'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
   ),
@@ -41,7 +42,7 @@ const COMMITS = [
     'fix(deps): update dependency com.google.cloud:google-cloud-spanner to v1.50.0'
   ),
   buildMockCommit('chore: update common templates'),
-];
+]);
 
 describe('OCaml', () => {
   let github: GitHub;

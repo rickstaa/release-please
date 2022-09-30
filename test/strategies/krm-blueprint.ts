@@ -28,6 +28,7 @@ import {TagName} from '../../src/util/tag-name';
 import {expect} from 'chai';
 import {KRMBlueprintVersion} from '../../src/updaters/krm/krm-blueprint-version';
 import {Changelog} from '../../src/updaters/changelog';
+import {parseConventionalCommits} from '../../src/commit';
 
 nock.disableNetConnect();
 const sandbox = sinon.createSandbox();
@@ -35,11 +36,11 @@ const fixturesPath = './test/fixtures/strategies/krm-blueprint';
 
 describe('KRMBlueprint', () => {
   let github: GitHub;
-  const commits = [
+  const commits = parseConventionalCommits([
     buildMockCommit(
       'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
     ),
-  ];
+  ]);
   beforeEach(async () => {
     github = await GitHub.create({
       owner: 'googleapis',

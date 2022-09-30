@@ -26,10 +26,11 @@ import {PyProjectToml} from '../../src/updaters/python/pyproject-toml';
 import {SetupCfg} from '../../src/updaters/python/setup-cfg';
 import {SetupPy} from '../../src/updaters/python/setup-py';
 import {Changelog} from '../../src/updaters/changelog';
+import {parseConventionalCommits} from '../../src/commit';
 
 const sandbox = sinon.createSandbox();
 
-const COMMITS = [
+const COMMITS = parseConventionalCommits([
   buildMockCommit(
     'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
   ),
@@ -37,7 +38,7 @@ const COMMITS = [
     'fix(deps): update dependency com.google.cloud:google-cloud-spanner to v1.50.0'
   ),
   buildMockCommit('chore: update common templates'),
-];
+]);
 
 describe('Python', () => {
   let github: GitHub;

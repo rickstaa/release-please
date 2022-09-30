@@ -15,7 +15,7 @@
 import {GitHub} from './github';
 import {CandidateReleasePullRequest, RepositoryConfig} from './manifest';
 import {Strategy} from './strategy';
-import {Commit} from './commit';
+import {Commit, ConventionalCommit} from './commit';
 import {Release} from './release';
 import {logger as defaultLogger, Logger} from './util/logger';
 
@@ -44,12 +44,12 @@ export abstract class ManifestPlugin {
 
   /**
    * Perform post-processing on commits, e.g, sentence casing them.
-   * @param {Commit[]} commits The set of commits that will feed into release pull request.
-   * @returns {Commit[]} The modified commit objects.
+   * @param {ConventionalCommit[]} commits The set of commits that will feed into release pull request.
+   * @returns {ConventionalCommit[]} The modified commit objects.
    */
   // TODO: for next major version, let's run the default conventional commit parser earlier
   // (outside of the strategy classes) and pass in the ConventionalCommit[] objects in.
-  processCommits(commits: Commit[]): Commit[] {
+  processCommits(commits: ConventionalCommit[]): ConventionalCommit[] {
     return commits;
   }
 

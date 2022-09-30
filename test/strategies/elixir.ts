@@ -23,17 +23,18 @@ import {TagName} from '../../src/util/tag-name';
 import {expect} from 'chai';
 import {Changelog} from '../../src/updaters/changelog';
 import {ElixirMixExs} from '../../src/updaters/elixir/elixir-mix-exs';
+import {parseConventionalCommits} from '../../src/commit';
 
 nock.disableNetConnect();
 const sandbox = sinon.createSandbox();
 
 describe('Elixir', () => {
   let github: GitHub;
-  const commits = [
+  const commits = parseConventionalCommits([
     buildMockCommit(
       'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
     ),
-  ];
+  ]);
   beforeEach(async () => {
     github = await GitHub.create({
       owner: 'googleapis',

@@ -25,10 +25,11 @@ import {Changelog} from '../../src/updaters/changelog';
 import {CargoLock} from '../../src/updaters/rust/cargo-lock';
 import {CargoToml} from '../../src/updaters/rust/cargo-toml';
 import snapshot = require('snap-shot-it');
+import {parseConventionalCommits} from '../../src/commit';
 
 const sandbox = sinon.createSandbox();
 
-const COMMITS = [
+const COMMITS = parseConventionalCommits([
   buildMockCommit(
     'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
   ),
@@ -36,7 +37,7 @@ const COMMITS = [
     'fix(deps): update dependency com.google.cloud:google-cloud-spanner to v1.50.0'
   ),
   buildMockCommit('chore: update common templates'),
-];
+]);
 
 describe('Rust', () => {
   const fixturesPath = './test/fixtures/strategies/rust-workspace';

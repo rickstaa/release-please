@@ -30,13 +30,14 @@ import snapshot = require('snap-shot-it');
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
 import {FileNotFoundError} from '../../src/errors';
+import {parseConventionalCommits} from '../../src/commit';
 
 const sandbox = sinon.createSandbox();
 
 describe('PHPYoshi', () => {
   let github: GitHub;
   let getFileStub: sinon.SinonStub;
-  const commits = [
+  const commits = parseConventionalCommits([
     buildMockCommit(
       'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0',
       ['Client1/foo.php']
@@ -46,7 +47,7 @@ describe('PHPYoshi', () => {
       ['Client2/foo.php', 'Client3/bar.php']
     ),
     buildMockCommit('chore: update common templates'),
-  ];
+  ]);
   beforeEach(async () => {
     github = await GitHub.create({
       owner: 'googleapis',
@@ -125,13 +126,13 @@ describe('PHPYoshi', () => {
         notes: 'some notes',
       };
       const release = await strategy.buildReleasePullRequest(
-        [
+        parseConventionalCommits([
           {
             sha: 'def234',
             message: 'chore: some miscellaneous task',
             files: ['Client3/README.md'],
           },
-        ],
+        ]),
         latestRelease
       );
       expect(release!.version?.toString()).to.eql(expectedVersion);
@@ -178,7 +179,7 @@ describe('PHPYoshi', () => {
         github,
       });
       const latestRelease = undefined;
-      const commits = [
+      const commits = parseConventionalCommits([
         buildMockCommit(
           'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0',
           ['Client1/foo.php', '.git/release-please.yml']
@@ -188,7 +189,7 @@ describe('PHPYoshi', () => {
           ['Client2/foo.php', 'Client3/bar.php']
         ),
         buildMockCommit('chore: update common templates'),
-      ];
+      ]);
       getFileStub
         .withArgs('.git/VERSION', 'main')
         .rejects(new FileNotFoundError('.git/VERSION'));

@@ -17,7 +17,7 @@ import {RepositoryConfig, CandidateReleasePullRequest} from '../manifest';
 import {GitHub} from '../github';
 import {Logger} from '../util/logger';
 import {Strategy} from '../strategy';
-import {Commit} from '../commit';
+import {ConventionalCommit} from '../commit';
 import {Release} from '../release';
 import {Version} from '../version';
 import {buildStrategy} from '../factory';
@@ -60,7 +60,7 @@ export class LinkedVersions extends ManifestPlugin {
    */
   async preconfigure(
     strategiesByPath: Record<string, Strategy>,
-    commitsByPath: Record<string, Commit[]>,
+    commitsByPath: Record<string, ConventionalCommit[]>,
     releasesByPath: Record<string, Release>
   ): Promise<Record<string, Strategy>> {
     // Find all strategies in the group
@@ -124,8 +124,16 @@ export class LinkedVersions extends ManifestPlugin {
         if (missingReleasePaths.has(path)) {
           this.logger.debug(`Appending fake commit for path: ${path}`);
           commitsByPath[path].push({
+            type: 'chore',
+            scope: component || null,
             sha: '',
             message: `chore(${component}): Synchronize ${
+              this.groupName
+            } versions\n\nRelease-As: ${primaryVersion.toString()}`,
+            breaking: false,
+            notes: [{title: 'Release-As', text: primaryVersion.toString()}],
+            references: [],
+            bareMessage: ` Synchronize ${
               this.groupName
             } versions\n\nRelease-As: ${primaryVersion.toString()}`,
           });

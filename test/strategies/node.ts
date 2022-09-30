@@ -31,6 +31,7 @@ import {Changelog} from '../../src/updaters/changelog';
 import {PackageJson} from '../../src/updaters/node/package-json';
 import * as assert from 'assert';
 import {MissingRequiredFileError, FileNotFoundError} from '../../src/errors';
+import {parseConventionalCommits} from '../../src/commit';
 
 nock.disableNetConnect();
 const sandbox = sinon.createSandbox();
@@ -38,11 +39,11 @@ const fixturesPath = './test/fixtures/strategies/node';
 
 describe('Node', () => {
   let github: GitHub;
-  const commits = [
+  const commits = parseConventionalCommits([
     buildMockCommit(
       'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
     ),
-  ];
+  ]);
   beforeEach(async () => {
     github = await GitHub.create({
       owner: 'googleapis',
@@ -94,11 +95,11 @@ describe('Node', () => {
         targetBranch: 'main',
         github,
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         buildMockCommit(
           'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
         ),
-      ];
+      ]);
       const latestRelease = {
         tag: new TagName(Version.parse('0.123.4'), 'node-test-repo'),
         sha: 'abc123',
@@ -124,11 +125,11 @@ describe('Node', () => {
         github,
         component: 'abc-123',
       });
-      const commits = [
+      const commits = parseConventionalCommits([
         buildMockCommit(
           'fix(deps): update dependency com.google.cloud:google-cloud-storage to v1.120.0'
         ),
-      ];
+      ]);
       const latestRelease = {
         tag: new TagName(Version.parse('0.123.4'), 'node-test-repo'),
         sha: 'abc123',
