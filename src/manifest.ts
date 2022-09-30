@@ -15,7 +15,7 @@
 import {ChangelogSection} from './changelog-notes';
 import {GitHub, GitHubRelease, GitHubTag} from './github';
 import {Version, VersionsMap} from './version';
-import {Commit, parseConventionalCommits} from './commit';
+import {Commit, parseConventionalCommits, ConventionalCommit} from './commit';
 import {PullRequest} from './pull-request';
 import {logger as defaultLogger, Logger} from './util/logger';
 import {CommitSplit} from './util/commit-split';
@@ -601,19 +601,21 @@ export class Manifest {
       );
     }
 
+    const conventionalCommits = parseConventionalCommits(commits, this.logger);
+
     // split commits by path
     this.logger.info(`Splitting ${commits.length} commits by path`);
     const cs = new CommitSplit({
       includeEmpty: true,
       packagePaths: Object.keys(this.repositoryConfig),
     });
-    const splitCommits = cs.split(commits);
+    const splitCommits = cs.split(conventionalCommits);
 
     // limit paths to ones since the last release
-    const commitsPerPath: Record<string, Commit[]> = {};
+    const commitsPerPath: Record<string, ConventionalCommit[]> = {};
     for (const path in this.repositoryConfig) {
       commitsPerPath[path] = commitsAfterSha(
-        path === ROOT_PROJECT_PATH ? commits : splitCommits[path],
+        path === ROOT_PROJECT_PATH ? conventionalCommits : splitCommits[path],
         releaseShasByPath[path]
       );
     }
@@ -668,7 +670,7 @@ export class Manifest {
       );
       this.logger.debug(`type: ${config.releaseType}`);
       this.logger.debug(`targetBranch: ${this.targetBranch}`);
-      let pathCommits = parseConventionalCommits(commitsPerPath[path]);
+      let pathCommits = commitsPerPath[path];
       // The processCommits hook can be implemented by plugins to
       // post-process commits. This can be used to perform cleanup, e.g,, sentence
       // casing all commit messages:
@@ -1579,7 +1581,10 @@ function hasAllLabels(expected: string[], existing: string[]): boolean {
   return true;
 }
 
-function commitsAfterSha(commits: Commit[], lastReleaseSha: string) {
+function commitsAfterSha(
+  commits: ConventionalCommit[],
+  lastReleaseSha: string
+): ConventionalCommit[] {
   if (!commits) {
     return [];
   }
