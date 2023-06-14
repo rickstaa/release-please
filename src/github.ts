@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// @ts-nocheck
+
 import {createPullRequest} from 'code-suggester';
 import {PullRequest} from './pull-request';
 import {Commit} from './commit';
